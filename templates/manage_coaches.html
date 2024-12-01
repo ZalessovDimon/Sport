@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Coaches</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Manage Coaches</h1>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary">Back to Admin Dashboard</a>
+
+        <h3>Coaches List</h3>
+        <table class="table table-bordered" id="coachesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coach in coaches %}
+                <tr id="coach-{{ coach.id_coach }}">
+                    <td>{{ coach.id_coach }}</td>
+                    <td>{{ coach.username }}</td>
+                    <td>{{ coach.full_name }}</td>
+                    <td>{{ coach.phone_number }}</td>
+                    <td>{{ coach.email }}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteCoach({{ coach.id_coach }})">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Add New Coach</h4>
+        <form id="addCoachForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone_number">Phone Number</label>
+                <input type="text" class="form-control" name="phone_number">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Coach</button>
+        </form>
+    </div>
+
+    <!-- Подключаем Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Удаление тренера через AJAX
+        function deleteCoach(coachId) {
+            if (confirm('Are you sure you want to delete this coach?')) {
+                fetch(`/admin/delete/coaches/${coachId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('coach-' + coachId).remove(); // Удаляем строку из таблицы
+                    } else {
+                        alert('Failed to delete coach');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+
+        // Добавление тренера через AJAX
+        document.querySelector('#addCoachForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Останавливаем стандартное поведение формы
+
+            const formData = new FormData(event.target);
+            const dataObject = {};
+            formData.forEach((value, key) => {
+                dataObject[key] = value;
+            });
+
+            fetch(`/admin/add/coaches`, {
+                method: 'POST',
+                body: JSON.stringify(dataObject),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Обновляем таблицу тренеров без перезагрузки страницы
+                    const newRow = document.createElement('tr');
+                    newRow.id = `coach-${data.coach.id_coach}`;  // Устанавливаем id строки
+                    newRow.innerHTML = `
+                        <td>${data.coach.id_coach}</td>
+                        <td>${data.coach.username}</td>
+                        <td>${data.coach.name}</td>
+                        <td>${data.coach.phone_number}</td>
+                        <td>${data.coach.email}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteCoach(${data.coach.id_coach})">Delete</button>
+                        </td>
+                    `;
+                    document.querySelector('#coachesTable tbody').appendChild(newRow);
+                } else {
+                    alert('Failed to add coach');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the coach');
+            });
+        });
+    </script>
+</body>
+</html>

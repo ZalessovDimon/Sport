@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Occupancy</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Manage Occupancy</h1>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary mb-3">Back to Admin Dashboard</a>
+
+        <h3>Occupancy List</h3>
+        <table class="table table-bordered" id="occupancyTable">
+            <thead>
+                <tr>
+                    <th>ID Occupancy</th>
+                    <th>ID Coach</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>ID Training</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in occupancies %}
+                <tr id="occupancy-{{ row.id_occupancy }}">
+                    <td>{{ row.id_occupancy }}</td>
+                    <td>{{ row.id_coach }}</td>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.status }}</td>
+                    <td>{{ row.id_training }}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteOccupancy({{ row.id_occupancy }})">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Add New Occupancy</h4>
+        <form id="addOccupancyForm">
+            <div class="form-group">
+                <label for="id_coach">ID Coach</label>
+                <input type="number" class="form-control" name="id_coach" required>
+            </div>
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" class="form-control" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <input type="text" class="form-control" name="status" required>
+            </div>
+            <div class="form-group">
+                <label for="id_training">ID Training</label>
+                <input type="number" class="form-control" name="id_training" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Occupancy</button>
+        </form>
+    </div>
+
+    <!-- Подключаем Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Удаление строки через AJAX
+        function deleteOccupancy(idOccupancy) {
+            if (confirm('Are you sure you want to delete this occupancy?')) {
+                fetch(`/admin/delete/occupancy/${idOccupancy}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('occupancy-' + idOccupancy).remove(); // Удаляем строку из таблицы
+                    } else {
+                        alert('Failed to delete occupancy');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+
+        // Добавление строки через AJAX
+        document.querySelector('#addOccupancyForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Останавливаем стандартное поведение формы
+
+            const formData = new FormData(event.target);
+            const dataObject = {};
+            formData.forEach((value, key) => {
+                dataObject[key] = value;
+            });
+
+            fetch(`/admin/add/occupancy`, {
+                method: 'POST',
+                body: JSON.stringify(dataObject),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Добавляем новую строку в таблицу
+                    const newRow = document.createElement('tr');
+                    newRow.id = `occupancy-${data.occupancy.id_occupancy}`;  // Устанавливаем id строки
+                    newRow.innerHTML = `
+                        <td>${data.occupancy.id_occupancy}</td>
+                        <td>${data.occupancy.id_coach}</td>
+                        <td>${data.occupancy.date}</td>
+                        <td>${data.occupancy.status}</td>
+                        <td>${data.occupancy.id_training}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteOccupancy(${data.occupancy.id_occupancy})">Delete</button>
+                        </td>
+                    `;
+                    document.querySelector('#occupancyTable tbody').appendChild(newRow);
+                } else {
+                    alert('Failed to add occupancy');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the occupancy');
+            });
+        });
+    </script>
+</body>
+</html>

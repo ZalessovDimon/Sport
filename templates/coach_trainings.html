@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Trainings</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        table th, table td {
+            text-align: center;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Coach Trainings</h1>
+        <a href="{{ url_for('coach_dashboard') }}" class="btn btn-primary mb-3">Back to Dashboard</a>
+
+        <h3>Training List</h3>
+        {% if trainings %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID Training</th>
+                    <th>Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Location</th>
+                    <th>Type</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for training in trainings %}
+                <tr>
+                    <td>{{ training.id_training }}</td>
+                    <td>{{ training.name }}</td>
+                    <td>{{ training.start_date }}</td>
+                    <td>{{ training.end_date }}</td>
+                    <td>{{ training.location }}</td>
+                    <td>{{ training.training_type }}</td>
+                    <td>{{ training.training_cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No training data available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

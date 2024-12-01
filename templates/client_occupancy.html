@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Occupancy</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+            border-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            border-color: #7f8c8d;
+        }
+        table th, table td {
+            text-align: center;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Client Occupancy</h1>
+        <a href="{{ url_for('client_dashboard') }}" class="btn btn-primary mb-3">Back to Dashboard</a>
+
+        <h3>Occupancy List</h3>
+        {% if occupancies %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID Occupancy</th>
+                    <th>Coach ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Training ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for occupancy in occupancies %}
+                <tr>
+                    <td>{{ occupancy.id_occupancy }}</td>
+                    <td>{{ occupancy.id_coach }}</td>
+                    <td>{{ occupancy.date }}</td>
+                    <td>{{ occupancy.status }}</td>
+                    <td>{{ occupancy.id_training }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No occupancy data available.</p> <!-- Если данных нет, выводим сообщение -->
+        {% endif %}
+    </div>
+</body>
+</html>

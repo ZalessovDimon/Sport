@@ -1,0 +1,22 @@
+<!-- role_selection.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role</title>
+</head>
+<body>
+    <h1>Select your role</h1>
+    <form action="/login" method="POST">
+        <label for="role">Choose your role:</label>
+        <select name="role" id="role" required>
+            <option value="admin">Admin</option>
+            <option value="client">Client</option>
+            <option value="coach">Coach</option>
+        </select>
+        <br>
+        <input type="submit" value="Next">
+    </form>
+</body>
+</html>
